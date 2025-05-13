@@ -1,53 +1,35 @@
-name: CI Multi-Jobs
+name: CI avec Artefacts
 
 on: [push]
 
 jobs:
-  build:
+  job1_produire_artefact:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Simuler un build
-        run: |
-          echo "Compilation du projet..."
-          mkdir -p output # Créer le dossier output
-          echo "Résultat du build" > output/build_result.txt
+      - name: Créer un fichier artefact
+        run: echo "Contenu de mon artefact !" > mon_artefact.txt
 
-      - name: Uploader l'artefact du build
+      - name: Uploader l'artefact
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: output/
+          name: resultat-job1
+          path: mon_artefact.txt
 
-  test:
+  job2_consommer_artefact:
     runs-on: ubuntu-latest
-    needs: build # Dépend du job 'build'
+    needs: job1_produire_artefact
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Télécharger l'artefact du build
+      - name: Télécharger l'artefact
         uses: actions/download-artifact@v4
         with:
-          name: build-output
-          path: downloaded_build_output
+          name: resultat-job1
+          # path: ./destination_optionnelle # par défaut à la racine du workspace
 
-      - name: Simuler des tests
-        run: |
-          echo "Exécution des tests sur le résultat du build..."
-          cat downloaded_build_output/build_result.txt
-          echo "Tests terminés !"
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test # Dépend du job 'test'
-    if: github.ref == 'refs/heads/main' # Vérifie que le job s'exécute seulement sur la branche 'main'
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
-
-      - name: Simuler un déploiement
-        run: echo "Déploiement du projet..."
-
+      - name: Utiliser l'artefact
+        run: cat mon_artefact.txt
