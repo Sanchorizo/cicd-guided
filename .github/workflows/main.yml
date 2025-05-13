@@ -1,16 +1,16 @@
-  GNU nano 8.0               .github/workflows/main.yml
-name: CI Simple
+name: CI avec Setup Node
 
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout du code
       uses: actions/checkout@v4
-
-    - name: Run a one-line script
-      run: echo "Hello, world depuis GitHub Actions !"
-
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Vérifier la version
+      run: node -v
