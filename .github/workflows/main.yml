@@ -1,16 +1,24 @@
-name: CI avec Setup Node
+name: CI avec Secrets
 
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout du code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-    - name: Vérifier la version
-      run: node -v
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Utiliser un secret (de manière sécurisée)
+        env:
+          MON_SECRET_UTILISE_EN_INTERNE: ${{ secrets.MY_SUPER_SECRET }}
+        run: |
+          echo "Utilisation du secret (on ne l'affiche pas directement)"
+          if [ -n "$MON_SECRET_UTILISE_EN_INTERNE" ]; then
+            echo "✅ Secret bien reçu dans l'environnement."
+          else
+            echo "❌ Secret manquant."
+            exit 1
+          fi
+
