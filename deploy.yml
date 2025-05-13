@@ -1,0 +1,38 @@
+name: Déploiement sur GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # ou 'master', selon la branche que tu utilises
+
+permissions:
+  contents: write  # Nécessaire pour pouvoir pusher sur la branche gh-pages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout du code
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # Si c'est un projet Node.js qui nécessite un build
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Installer les dépendances et construire le projet (par exemple avec React)
+      - name: Installer les dépendances et Builder
+        run: |
+          npm ci
+          npm run build  # Assurez-vous que cela génère dans './build' ou './dist'
+
+      # Déployer sur GitHub Pages
+      - name: Déployer sur GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build  # Changez ce chemin si nécessaire (./dist, etc.)
