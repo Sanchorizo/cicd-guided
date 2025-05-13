@@ -1,22 +1,23 @@
-name: CI avec Matrice Node.js
+name: CI avec Tests Unitaires
 
 on: [push]
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ['18', '20'] # Tu peux ajouter d'autres versions ici
 
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Afficher la version de Node.js
-        run: echo "Test avec Node.js $(node -v) sur ${{ runner.os }}"
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Exécuter les tests
+        run: npm test
